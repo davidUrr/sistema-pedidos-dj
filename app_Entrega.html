@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DJ · Entrega</title>
+<style>
+:root{--green:#157347;--green-dark:#0b432b;--lime:#dff2e6;--ink:#1f2937;--muted:#667085;--line:#d0d5dd;--bg:#f1f5f3;--card:#fff;--amber:#fff5d6;--amber-line:#e3b341;--red:#b42318;--blue:#175cd3;--shadow:0 12px 26px #102a1d12}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.shell{max-width:900px;margin:auto;padding:20px 15px 50px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.brand{display:flex;gap:12px;align-items:center}.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(145deg,#2cac64,#0b432b);display:grid;place-items:center;color:white;font-weight:900;font-size:18px}.eyebrow{color:var(--green);text-transform:uppercase;font-size:10px;font-weight:900;letter-spacing:.08em}h1{margin:0;font-size:22px}.card{background:var(--card);border:1px solid #e3e7e5;border-radius:17px;padding:19px;box-shadow:var(--shadow);margin-bottom:17px}.title{display:flex;align-items:center;gap:9px;margin:0 0 15px;font-size:16px}.num{width:24px;height:24px;border-radius:7px;background:var(--lime);color:var(--green-dark);display:grid;place-items:center;font-weight:900;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1.5fr;gap:15px}.order-item{padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;cursor:pointer;background:#fff}.order-item.active{border-color:var(--green);background:var(--lime)}.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:900;font-size:13px;cursor:pointer}.primary{background:var(--green);color:#fff}.outline{background:#fff;border:1px solid var(--line);color:var(--ink)}.status-badge{padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase}.status-entregado{background:#def7ec;color:#03543f}select{width:100%;padding:9px;border-radius:8px;border:1px solid var(--line);margin-bottom:15px}.result{display:none;margin-top:13px;background:#eef8f1;border:1px solid #a9d9b8;padding:12px;border-radius:10px;font-weight:600;color:var(--green-dark)}@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body><main class="shell">
+<header class="top"><div class="brand"><div class="logo">DJ</div><div><div class="eyebrow">Distribuciones Johnson</div><h1>Módulo Entrega</h1></div></div></header>
+<div class="grid">
+<section class="card"><h2 class="title"><span class="num">1</span>Pendientes de Entrega</h2><label>Filtrar por Ruta:</label><select id="routeFilter"><option>TODAS</option><option>RUTA MEDELLÍN</option><option>RUTA BELLO</option><option>RUTA ENVIGADO</option><option>RUTA ITAGUI</option><option>RUTA SABANETA</option><option>RUTA LA ESTRELLA - CALDAS</option><option>RUTA SAN ANTONIO DE PRADO</option></select><div id="pendingList"></div></section>
+<section class="card"><h2 class="title"><span class="num">2</span>Detalle y Confirmación</h2><div id="orderDetails" style="display:none"><p><strong>ID:</strong> <span id="dId"></span></p><p><strong>Cliente:</strong> <span id="dClient"></span></p><p><strong>Dirección:</strong> <span id="dAddress"></span></p><p><strong>Ruta:</strong> <span id="dRoute"></span></p><div class="actions" style="display:flex;gap:10px"><button class="btn primary" id="confirmBtn">Confirmar Entrega</button><button class="btn outline" id="mapsBtn">Navegar (Maps)</button></div><div id="result" class="result"></div></div><div id="noSelection" class="hint" style="text-align:center;padding:40px">Seleccione un pedido.</div><h2 class="title" style="margin-top:30px"><span class="num">H</span>Historial (10)</h2><div id="historyList"></div></section>
+</div></main>
+<script>
+const $=id=>document.getElementById(id);
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCo8zu5yi6SoGiOZV1-bC203KD3rVGxE2CFh64sl3dr3gfm0zXKDDsPoWGqXkBo8ZY/exec';
+let orders=[]; let activeIdx=-1;
+function load(){
+    fetch(`${SCRIPT_URL}?action=obtenerPendientesEntrega`).then(r=>r.json()).then(data=>{orders=data;render()});
+    fetch(`${SCRIPT_URL}?action=obtenerHistorial`).then(r=>r.json()).then(data=>{$('historyList').innerHTML=data.map(o=>`<div style="padding:8px;border-bottom:1px solid #eee;font-size:11px"><strong>${o.id}</strong> - ${o.name} <span class="status-badge status-entregado">OK</span></div>`).join('')});
+}
+function render(){
+    const filter=$('routeFilter').value;
+    const pending=orders.filter(o=>filter==='TODAS' || o.route===filter);
+    $('pendingList').innerHTML=pending.length?pending.map(o=>`<div class="order-item ${activeIdx!==-1 && orders[activeIdx].id===o.id?'active':''}" onclick="selectOrder('${o.id}')"><strong>${o.id}</strong> - ${o.name}<br><small>${o.route}</small></div>`).join(''):'<p class="hint">No hay entregas pendientes.</p>';
+}
+function selectOrder(id){
+    activeIdx=orders.findIndex(x=>x.id===id); render(); $('noSelection').style.display='none'; $('orderDetails').style.display='block';
+    const o=orders[activeIdx]; $('dId').innerText=o.id; $('dClient').innerText=o.name; $('dAddress').innerText=o.address; $('dRoute').innerText=o.route;
+}
+$('confirmBtn').onclick=()=>{
+    fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'confirmarEntrega',id:orders[activeIdx].id})}).then(()=>{
+        $('result').style.display='block'; $('result').innerText='Entrega confirmada.';
+        setTimeout(()=>location.reload(),1500);
+    });
+};
+$('mapsBtn').onclick=()=>{
+    const url='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Distribuciones Johnson, La Estrella')+'&destination='+encodeURIComponent(orders[activeIdx].address)+'&travelmode=driving';
+    window.open(url,'_blank');
+};
+$('routeFilter').onchange=render;
+load();
+</script></body></html>

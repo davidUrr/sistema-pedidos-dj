@@ -3,86 +3,40 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DJ · Alistador</title>
 <style>
-:root{--green:#157347;--green-dark:#0b432b;--lime:#dff2e6;--ink:#1f2937;--muted:#667085;--line:#d0d5dd;--bg:#f1f5f3;--card:#fff;--amber:#fff5d6;--amber-line:#e3b341;--red:#b42318;--blue:#175cd3;--shadow:0 12px 26px #102a1d12}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.shell{max-width:1000px;margin:auto;padding:24px 18px 55px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.brand{display:flex;gap:12px;align-items:center}.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(145deg,#2cac64,#0b432b);display:grid;place-items:center;color:white;font-weight:900;font-size:18px}.eyebrow{color:var(--green);text-transform:uppercase;font-size:10px;font-weight:900;letter-spacing:.08em}h1{margin:0;font-size:22px}.card{background:var(--card);border:1px solid #e3e7e5;border-radius:17px;padding:19px;box-shadow:var(--shadow);margin-bottom:17px}.title{display:flex;align-items:center;gap:9px;margin:0 0 15px;font-size:16px}.num{width:24px;height:24px;border-radius:7px;background:var(--lime);color:var(--green-dark);display:grid;place-items:center;font-weight:900;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}label{font-size:10px;font-weight:900;text-transform:uppercase;color:#475467;letter-spacing:.03em}input,select,textarea{width:100%;font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--lime)}textarea{min-height:60px;resize:vertical}.hint{color:var(--muted);font-size:12px;line-height:1.45}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:900;font-size:13px;cursor:pointer;transition:transform .16s,filter .16s}.btn:active{transform:scale(.97)}.primary{background:var(--green);color:#fff}.secondary{background:var(--lime);color:var(--green-dark)}.outline{background:#fff;border:1px solid var(--line);color:var(--ink)}.products{margin-top:14px;border:1px solid #dce5de;border-radius:10px;overflow:auto}.products table{border-collapse:collapse;width:100%;min-width:600px}.products th{background:#f4f8f5;color:#475467;font-size:10px;text-transform:uppercase;padding:9px;text-align:left}.products td{padding:7px;border-top:1px solid #e8eeea}.availability{display:flex;gap:5px}.availability button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 8px;cursor:pointer;font-weight:800;font-size:11px}.availability button.active.yes{background:#e7f5eb;border-color:var(--green);color:var(--green-dark)}.availability button.active.no{background:#fff0ef;border-color:var(--red);color:var(--red)}.order-list{list-style:none;padding:0}.order-item{padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;cursor:pointer;transition:background .2s}.order-item:hover{background:var(--lime)}.order-item.active{border-color:var(--green);background:var(--lime)}.result{display:none;margin-top:13px;background:#eef8f1;border:1px solid #a9d9b8;padding:12px;border-radius:10px;font-weight:600;color:var(--green-dark)}@media(max-width:800px){.grid{grid-template-columns:1fr}}
+:root{--green:#157347;--green-dark:#0b432b;--lime:#dff2e6;--ink:#1f2937;--muted:#667085;--line:#d0d5dd;--bg:#f1f5f3;--card:#fff;--amber:#fff5d6;--amber-line:#e3b341;--red:#b42318;--shadow:0 12px 26px #102a1d12}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.shell{max-width:1000px;margin:auto;padding:20px 15px 50px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.brand{display:flex;gap:12px;align-items:center}.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(145deg,#2cac64,#0b432b);display:grid;place-items:center;color:white;font-weight:900;font-size:18px}.eyebrow{color:var(--green);text-transform:uppercase;font-size:10px;font-weight:900;letter-spacing:.08em}h1{margin:0;font-size:22px}.card{background:var(--card);border:1px solid #e3e7e5;border-radius:17px;padding:19px;box-shadow:var(--shadow);margin-bottom:17px}.title{display:flex;align-items:center;gap:9px;margin:0 0 15px;font-size:16px}.num{width:24px;height:24px;border-radius:7px;background:var(--lime);color:var(--green-dark);display:grid;place-items:center;font-weight:900;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1.5fr;gap:15px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}label{font-size:10px;font-weight:900;text-transform:uppercase;color:#475467;letter-spacing:.03em}input,select,textarea{width:100%;font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff;outline:none}textarea{min-height:60px}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:900;font-size:13px;cursor:pointer;transition:transform .16s}.btn:active{transform:scale(.97)}.primary{background:var(--green);color:#fff}.secondary{background:var(--lime);color:var(--green-dark)}.danger{background:#fff0ef;color:var(--red)}.outline{background:#fff;border:1px solid var(--line);color:var(--ink)}.products table{border-collapse:collapse;width:100%}.products th{background:#f4f8f5;font-size:10px;padding:9px;text-align:left}.products td{padding:7px;border-top:1px solid #e8eeea}.availability button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 8px;cursor:pointer;font-weight:800;font-size:11px}.availability button.active.yes{background:#e7f5eb;border-color:var(--green);color:var(--green-dark)}.availability button.active.no{background:#fff0ef;border-color:var(--red);color:var(--red)}.order-list{list-style:none;padding:0}.order-item{padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;cursor:pointer}.order-item:hover{background:var(--lime)}.order-item.active{border-color:var(--green);background:var(--lime)}.status-badge{padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase}.status-entregado{background:#def7ec;color:#03543f}.result{display:none;margin-top:13px;background:#eef8f1;border:1px solid #a9d9b8;padding:12px;border-radius:10px;font-weight:600;color:var(--green-dark)}@media(max-width:800px){.grid{grid-template-columns:1fr}}
 </style></head>
 <body><main class="shell">
-<header class="top"><div class="brand"><div class="logo">DJ</div><div><div class="eyebrow">Distribuciones Johnson</div><h1>Módulo Alistador</h1></div></div></header>
+<header class="top"><div class="brand"><div class="logo">DJ</div><div><div class="eyebrow">Distribuciones Johnson</div><h1>App Alistador</h1></div></div></header>
 <div class="grid">
-<section class="card"><h2 class="title"><span class="num">1</span>Pedidos Pendientes</h2><ul id="orderList" class="order-list"></ul><p class="hint">Seleccione un pedido para validar inventario.</p></section>
-<section class="card"><h2 class="title"><span class="num">2</span>Validación y Despacho</h2><div id="orderDetails" style="display:none"><div class="fields"><div class="field"><label>Consecutivo</label><input id="dId" readonly></div><div class="field"><label>Cliente</label><input id="dClient" readonly></div><div class="field full"><label>Dirección</label><input id="dAddress" readonly></div><div class="field"><label for="alistador">Nombre Alistador</label><input id="alistador" placeholder="Su nombre"></div><div class="field"><label for="route">Ruta Asignada</label><select id="route"><option>RUTA MEDELLÍN</option><option>RUTA BELLO</option><option>RUTA ENVIGADO</option><option>RUTA ITAGUI</option><option>RUTA SABANETA</option><option>RUTA LA ESTRELLA - CALDAS</option><option>RUTA SAN ANTONIO DE PRADO</option></select></div></div><div class="products"><table><thead><tr><th>Descripción</th><th>Cant.</th><th>Medida</th><th>Disponible</th></tr></thead><tbody id="dProducts"></tbody></table></div><div class="field" style="margin-top:12px"><label for="dNotes">Notas Despacho</label><textarea id="dNotes" placeholder="Observaciones de existencias"></textarea></div><div class="actions"><button class="btn primary" id="confirmBtn">Confirmar y Generar Pedido</button><button class="btn outline" id="routeBtn">Ver en Google Maps</button></div><div id="result" class="result"></div></div><div id="noSelection" class="hint" style="text-align:center;padding:40px">Seleccione un pedido del listado para comenzar.</div></section>
-</div>
-</main>
+<section class="card"><h2 class="title"><span class="num">1</span>Pedidos Pendientes</h2><ul id="orderList" class="order-list"></ul><h2 class="title" style="margin-top:20px"><span class="num">H</span>Historial (10)</h2><div id="historyList"></div></section>
+<section class="card"><h2 class="title"><span class="num">2</span>Validación</h2><div id="orderDetails" style="display:none"><div class="fields"><div class="field"><label>ID</label><input id="dId" readonly></div><div class="field"><label>Cliente</label><input id="dClient" readonly></div><div class="field full"><label>Dirección</label><input id="dAddress" readonly></div><div class="field"><label>Alistador</label><input id="alistador" placeholder="Su nombre"></div><div class="field"><label>Ruta</label><select id="route"><option>RUTA MEDELLÍN</option><option>RUTA BELLO</option><option>RUTA ENVIGADO</option><option>RUTA ITAGUI</option><option>RUTA SABANETA</option><option>RUTA LA ESTRELLA - CALDAS</option><option>RUTA SAN ANTONIO DE PRADO</option></select></div></div><div class="products" style="margin-top:15px"><table><thead><tr><th>Producto</th><th>Cant.</th><th>Disponible</th></tr></thead><tbody id="dProducts"></tbody></table></div><div class="field" style="margin-top:12px"><label>Notas para Vendedor</label><textarea id="dNotes" placeholder="Indique faltantes si devuelve el pedido"></textarea></div><div class="actions"><button class="btn primary" id="btnFacturacion">Enviar a Facturación</button><button class="btn danger" id="btnDevolver">Devolver a Vendedor</button></div><div id="result" class="result"></div></div><div id="noSelection" class="hint" style="text-align:center;padding:40px">Seleccione un pedido.</div></section>
+</div></main>
 <script>
 const $=id=>document.getElementById(id);
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxx7OVHrtMiIOsCB3tOt3Su7Z79q1GIlYhbURgye02DG7Z_j15slh28vUQMykxUOT4p/exec';
-
-let orders=[];
-let activeIdx=-1;
-
-// Cargar pedidos desde Google Apps Script
-function cargarPedidos() {
-    fetch(`${SCRIPT_URL}?action=obtenerPedidos`)
-    .then(res => res.json())
-    .then(data => {
-        orders = data;
-        renderList();
-    })
-    .catch(err => console.error('Error al cargar pedidos:', err));
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCo8zu5yi6SoGiOZV1-bC203KD3rVGxE2CFh64sl3dr3gfm0zXKDDsPoWGqXkBo8ZY/exec';
+let orders=[]; let activeIdx=-1;
+function load(){
+    fetch(`${SCRIPT_URL}?action=obtenerPendientesAlistador`).then(r=>r.json()).then(data=>{orders=data;renderList()});
+    fetch(`${SCRIPT_URL}?action=obtenerHistorial`).then(r=>r.json()).then(data=>{$('historyList').innerHTML=data.map(o=>`<div style="padding:8px;border-bottom:1px solid #eee;font-size:11px"><strong>${o.id}</strong> - ${o.name} <span class="status-badge status-entregado">OK</span></div>`).join('')});
 }
-
-function renderList(){$('orderList').innerHTML=orders.map((o,i)=>`<li class="order-item ${activeIdx===i?'active':''}" onclick="selectOrder(${i})"><strong>${o.id}</strong> - ${o.name}<br><small>${o.address}</small></li>`).join('')}
+function renderList(){$('orderList').innerHTML=orders.map((o,i)=>`<li class="order-item ${activeIdx===i?'active':''}" onclick="selectOrder(${i})"><strong>${o.id}</strong> - ${o.name}</li>`).join('')}
 function selectOrder(i){
     activeIdx=i; renderList(); $('noSelection').style.display='none'; $('orderDetails').style.display='block';
-    const o=orders[i]; $('dId').value=o.id; $('dClient').value=o.name; $('dAddress').value=o.address;
-    renderProducts();
+    const o=orders[i]; $('dId').value=o.id; $('dClient').value=o.name; $('dAddress').value=o.address; renderProducts();
 }
 function renderProducts(){
-    const o=orders[activeIdx];
-    $('dProducts').innerHTML=o.products.map((p,j)=>`<tr><td>${p.d}</td><td>${p.q}</td><td>${p.m}</td><td><div class="availability"><button class="yes ${p.ok===true?'active':''}" onclick="setOk(${j},true)">Sí</button><button class="no ${p.ok===false?'active':''}" onclick="setOk(${j},false)">No</button></div></td></tr>`).join('');
+    $('dProducts').innerHTML=orders[activeIdx].products.map((p,j)=>`<tr><td>${p.d}</td><td>${p.q}</td><td><div class="availability"><button class="${p.ok===true?'active yes':''}" onclick="setOk(${j},true)">Sí</button><button class="${p.ok===false?'active no':''}" onclick="setOk(${j},false)">No</button></div></td></tr>`).join('');
 }
 function setOk(j,val){orders[activeIdx].products[j].ok=val; renderProducts()}
-
-$('confirmBtn').onclick=()=>{
-    const orderToConfirm = orders[activeIdx];
-    orderToConfirm.action = 'confirmarDespacho';
-    orderToConfirm.alistador = $('alistador').value;
-    orderToConfirm.route = $('route').value;
-    orderToConfirm.despachoNotes = $('dNotes').value;
-
-    $('confirmBtn').disabled = true;
-    $('confirmBtn').innerText = 'Procesando...';
-
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(orderToConfirm)
-    })
-    .then(res => res.json())
-    .then(response => {
-        $('result').style.display='block'; 
-        $('result').innerText=`Pedido ${orderToConfirm.id} confirmado y enviado a facturación.`;
-        setTimeout(()=>{
-            $('result').style.display='none'; 
-            $('orderDetails').style.display='none'; 
-            $('noSelection').style.display='block';
-            $('confirmBtn').disabled = false;
-            $('confirmBtn').innerText = 'Confirmar y Generar Pedido';
-            activeIdx=-1; 
-            cargarPedidos(); 
-        }, 2000);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        $('confirmBtn').disabled = false;
-        $('confirmBtn').innerText = 'Confirmar y Generar Pedido';
+$('btnFacturacion').onclick=()=>send('confirmarDespacho','Enviado a Facturación.');
+$('btnDevolver').onclick=()=>send('devolverVendedor','Devuelto al Vendedor.');
+function send(act,msg){
+    const o=orders[activeIdx];
+    const data={action:act,id:o.id,alistador:$('alistador').value,route:$('route').value,despachoNotes:$('dNotes').value,notes:$('dNotes').value,products:o.products};
+    fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(data)}).then(()=>{
+        $('result').style.display='block'; $('result').innerText=msg;
+        setTimeout(()=>location.reload(),2000);
     });
-};
-
-$('routeBtn').onclick=()=>{
-    const addr=orders[activeIdx].address;
-    const url='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Distribuciones Johnson, La Estrella')+'&destination='+encodeURIComponent(addr)+'&travelmode=driving';
-    window.open(url,'_blank');
-};
-
-// Iniciar cargando los datos reales
-cargarPedidos();
+}
+load();
 </script></body></html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DJ · Facturación</title>
+<style>
+:root{--green:#157347;--green-dark:#0b432b;--lime:#dff2e6;--ink:#1f2937;--muted:#667085;--line:#d0d5dd;--bg:#f1f5f3;--card:#fff;--amber:#fff5d6;--amber-line:#e3b341;--red:#b42318;--shadow:0 12px 26px #102a1d12}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.shell{max-width:800px;margin:auto;padding:20px 15px 50px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.brand{display:flex;gap:12px;align-items:center}.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(145deg,#2cac64,#0b432b);display:grid;place-items:center;color:white;font-weight:900;font-size:18px}.eyebrow{color:var(--green);text-transform:uppercase;font-size:10px;font-weight:900;letter-spacing:.08em}h1{margin:0;font-size:22px}.card{background:var(--card);border:1px solid #e3e7e5;border-radius:17px;padding:19px;box-shadow:var(--shadow);margin-bottom:17px}.title{display:flex;align-items:center;gap:9px;margin:0 0 15px;font-size:16px}.num{width:24px;height:24px;border-radius:7px;background:var(--lime);color:var(--green-dark);display:grid;place-items:center;font-weight:900;font-size:12px}.order-item{padding:15px;border:1px solid var(--line);border-radius:10px;margin-bottom:12px;background:#fff;display:flex;justify-content:space-between;align-items:center}.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:900;font-size:12px;cursor:pointer}.primary{background:var(--green);color:#fff}.status-badge{padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase}.status-facturacion{background:#fef3c7;color:#92400e}.status-entregado{background:#def7ec;color:#03543f}.result{display:none;margin-top:13px;background:#eef8f1;border:1px solid #a9d9b8;padding:12px;border-radius:10px;font-weight:600;color:var(--green-dark)}
+</style></head>
+<body><main class="shell">
+<header class="top"><div class="brand"><div class="logo">DJ</div><div><div class="eyebrow">Distribuciones Johnson</div><h1>Módulo Facturación</h1></div></div></header>
+<section class="card"><h2 class="title"><span class="num">1</span>Pedidos por Facturar (World Office)</h2><div id="pendingList"></div><p class="hint">Cree la factura en World Office y luego confirme aquí para pasar a entrega.</p></section>
+<section class="card"><h2 class="title"><span class="num">H</span>Historial (Últimos 10)</h2><div id="historyList"></div></section>
+<div id="result" class="result"></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCo8zu5yi6SoGiOZV1-bC203KD3rVGxE2CFh64sl3dr3gfm0zXKDDsPoWGqXkBo8ZY/exec';
+function load(){
+    fetch(`${SCRIPT_URL}?action=obtenerPendientesFacturacion`).then(r=>r.json()).then(data=>{
+        $('pendingList').innerHTML=data.length?data.map(o=>`<div class="order-item"><div><strong>${o.id}</strong> - ${o.name}<br><span class="status-badge status-facturacion">Validado por Bodega</span></div><button class="btn primary" onclick="confirmFact('${o.id}')">Confirmar Factura</button></div>`).join(''):'<p class="hint">No hay pedidos pendientes.</p>';
+    });
+    fetch(`${SCRIPT_URL}?action=obtenerHistorial`).then(r=>r.json()).then(data=>{
+        $('historyList').innerHTML=data.map(o=>`<div class="order-item"><div><strong>${o.id}</strong> - ${o.name}</div><span class="status-badge status-entregado">Entregado</span></div>`).join('');
+    });
+}
+function confirmFact(id){
+    fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'confirmarFactura',id:id})}).then(()=>{
+        $('result').style.display='block'; $('result').innerText='Factura confirmada. Pedido enviado a Entrega.';
+        setTimeout(()=>location.reload(),1500);
+    });
+}
+load();
+</script></body></html>
