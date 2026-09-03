@@ -45,38 +45,46 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Pedidos");
-  var rows = sheet.getDataRange().getValues();
-  var action = e.parameter.action;
-  var result = [];
-  
-  for (var i = 1; i < rows.length; i++) {
-    var pedido = {
-      id: rows[i][0], date: rows[i][1], nit: rows[i][2], name: rows[i][3],
-      address: rows[i][4], city: rows[i][5], neighborhood: rows[i][6],
-      phone: rows[i][7], priceList: rows[i][8], products: JSON.parse(rows[i][9] || "[]"),
-      notes: rows[i][10], status: rows[i][11], alistador: rows[i][12], route: rows[i][13],
-      facturaDate: rows[i][15], entregaDate: rows[i][16]
-    };
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Pedidos");
+    var rows = sheet.getDataRange().getValues();
+    var action = e.parameter.action;
+    var result = [];
+    
+    for (var i = 1; i < rows.length; i++) {
+      // Seguridad contra JSON mal formateados en el Excel
+      var parsedProducts = [];
+      try {
+        parsedProducts = JSON.parse(rows[i][9] || "[]");
+      } catch (err) {
+        parsedProducts = [];
+      }
 
-    if (action === "obtenerPendientesAlistador" && pedido.status === "Pendiente Alistador") result.push(pedido);
-    if (action === "obtenerDevueltosVendedor" && pedido.status === "Devuelto a Vendedor") result.push(pedido);
-    if (action === "obtenerPendientesFacturacion" && pedido.status === "Pendiente Facturación") result.push(pedido);
-    if (action === "obtenerPendientesEntrega" && pedido.status === "Pendiente Entrega") result.push(pedido);
-    if (action === "obtenerHistorial" || action === "obtenerTodo") result.push(pedido);
-  }
-  
-  // Muestra los últimos 10 sin importar su estado
-  if (action === "obtenerHistorial") {
-    result = result.slice(-10).reverse();
-  }
-  if (action === "obtenerTodo") {
-    result = result.reverse();
-  }
+      var pedido = {
+        id: rows[i][0], date: rows[i][1], nit: rows[i][2], name: rows[i][3],
+        address: rows[i][4], city: rows[i][5], neighborhood: rows[i][6],
+        phone: rows[i][7], priceList: rows[i][8], products: parsedProducts,
+        notes: rows[i][10], status: rows[i][11], alistador: rows[i][12], route: rows[i][13],
+        facturaDate: rows[i][15], entregaDate: rows[i][16]
+      };
 
-  return response(result);
-}
+      if (action === "obtenerPendientesAlistador" && pedido.status === "Pendiente Alistador") result.push(pedido);
+      if (action === "obtenerDevueltosVendedor" && pedido.status === "Devuelto a Vendedor") result.push(pedido);
+      if (action === "obtenerPendientesFacturacion" && pedido.status === "Pendiente Facturación") result.push(pedido);
+      if (action === "obtenerPendientesEntrega" && pedido.status === "Pendiente Entrega") result.push(pedido);
+      
+      if (action === "obtenerHistorial" || action === "obtenerTodo") result.push(pedido);
+    }
+    
+    if (action === "obtenerHistorial") {
+      result = result.filter(p => p.status === "Entregado").slice(-10).reverse();
+    }
+    if (action === "obtenerTodo") {
+      result = result.reverse();
+    }
 
-function response(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+    return response(result);
+  } catch (error) {
+    return response({ "error": error.toString() });
+  }
 }

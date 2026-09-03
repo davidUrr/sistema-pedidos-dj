@@ -13,7 +13,7 @@
 </div></main>
 <script>
 const $=id=>document.getElementById(id);
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbXI9tWw4H-0VJBu-WjbFTW1Q0JidTJEs6UsIXHQEmNFPInJWf8NoEljUQ-P3Aa-OW/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNTzFZoJ5iS8oxHAfUUeZYVMIUZLaJgHs_GDZpXfSJIpXt7369PVwpT6TpvGkaqYBv/exec';
 let orders=[]; let activeIdx=-1;
 function load(){
     fetch(`${SCRIPT_URL}?action=obtenerPendientesEntrega`).then(r=>r.json()).then(data=>{orders=data;render()});
