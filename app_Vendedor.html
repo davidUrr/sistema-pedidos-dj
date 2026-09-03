@@ -15,8 +15,15 @@
 </main>
 <script>
 const $=id=>document.getElementById(id);let products=[];
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRA-fAVpvVMQRlJyCB9g6Ziu9qMDPi42zOsymzZ9ua9hZdhY40mQggC7g5b3g8ktiI/exec';
-function genId(){const t=Date.now().toString(36).toUpperCase();const r=Math.random().toString(36).substring(2,5).toUpperCase();return `SOL-${t}-${r}`}
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzU-S4moXhirw1AHlq3AJM0IebBIxHZ60r0PbRRGIbNwNaNl7YiKoYT4Zjyi3U4von6/exec';
+function genId() {
+    const d = new Date();
+    const pad = n => n.toString().padStart(2, '0');
+    const fecha = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+    const hora = `${pad(d.getHours())}${pad(d.getMinutes())}`;
+    const rnd = Math.random().toString(36).substring(2,5).toUpperCase();
+    return `SOL-${fecha}-${hora}-${rnd}`;
+}
 $('consecutive').value=genId();
 function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function render(){if(!products.length)products=[{d:'',q:1,m:'Unidad',o:''}];$('productBody').innerHTML=products.map((p,i)=>`<tr><td><input data-p="${i}" data-k="d" value="${esc(p.d)}"></td><td><input type="number" data-p="${i}" data-k="q" value="${p.q}"></td><td><select data-p="${i}" data-k="m"><option ${p.m==='Unidad'?'selected':''}>Unidad</option><option ${p.m==='Metro'?'selected':''}>Metro</option><option ${p.m==='Rollo'?'selected':''}>Rollo</option></select></td><td><input data-p="${i}" data-k="o" value="${esc(p.o)}"></td><td><button class="row-remove" onclick="remove(${i})">×</button></td></tr>`).join('');$('productBody').querySelectorAll('input,select').forEach(e=>e.oninput=()=>{products[+e.dataset.p][e.dataset.k]=e.value})}

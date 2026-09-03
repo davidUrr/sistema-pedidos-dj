@@ -21,39 +21,21 @@ function doPost(e) {
         
         if (data.action === "confirmarDespacho") {
           sheet.getRange(rowIndex, 12).setValue("Pendiente Facturación");
-          
-          // Preservar datos de alistador y ruta
-          if (data.alistador) sheet.getRange(rowIndex, 13).setValue(data.alistador);
-          if (data.route) sheet.getRange(rowIndex, 14).setValue(data.route);
-          
-          // Actualizar datos del cliente si el vendedor edita la devolución
-          if (data.nit) sheet.getRange(rowIndex, 3).setValue(data.nit);
-          if (data.name) sheet.getRange(rowIndex, 4).setValue(data.name);
-          if (data.address) sheet.getRange(rowIndex, 5).setValue(data.address);
-          if (data.city) sheet.getRange(rowIndex, 6).setValue(data.city);
-          if (data.neighborhood) sheet.getRange(rowIndex, 7).setValue(data.neighborhood);
-          if (data.phone) sheet.getRange(rowIndex, 8).setValue(data.phone);
-          if (data.priceList) sheet.getRange(rowIndex, 9).setValue(data.priceList);
-          
-          // Actualizar notas y productos modificados
-          sheet.getRange(rowIndex, 11).setValue(data.despachoNotes || data.notes || rows[i][10]);
-          if (data.products) sheet.getRange(rowIndex, 10).setValue(JSON.stringify(data.products));
+          sheet.getRange(rowIndex, 13).setValue(data.alistador || "");
+          sheet.getRange(rowIndex, 14).setValue(data.route || "");
+          sheet.getRange(rowIndex, 11).setValue(data.despachoNotes || rows[i][10]);
         } 
         else if (data.action === "devolverVendedor") {
           sheet.getRange(rowIndex, 12).setValue("Devuelto a Vendedor");
           sheet.getRange(rowIndex, 11).setValue(data.notes || rows[i][10]);
-          // Guardar ruta y productos validados parcialmente por el alistador
-          if (data.route) sheet.getRange(rowIndex, 14).setValue(data.route);
-          if (data.alistador) sheet.getRange(rowIndex, 13).setValue(data.alistador);
-          if (data.products) sheet.getRange(rowIndex, 10).setValue(JSON.stringify(data.products));
         }
         else if (data.action === "confirmarFactura") {
           sheet.getRange(rowIndex, 12).setValue("Pendiente Entrega");
-          sheet.getRange(rowIndex, 16).setValue(new Date());
+          sheet.getRange(rowIndex, 16).setValue(new Date()); // Columna P: Factura_Confirmada
         }
         else if (data.action === "confirmarEntrega") {
           sheet.getRange(rowIndex, 12).setValue("Entregado");
-          sheet.getRange(rowIndex, 17).setValue(new Date());
+          sheet.getRange(rowIndex, 17).setValue(new Date()); // Columna Q: Entrega_Confirmada
         }
         
         return response({ "status": "ok", "mensaje": "Estado actualizado" });
@@ -83,16 +65,20 @@ function doGet(e) {
     if (action === "obtenerDevueltosVendedor" && pedido.status === "Devuelto a Vendedor") result.push(pedido);
     if (action === "obtenerPendientesFacturacion" && pedido.status === "Pendiente Facturación") result.push(pedido);
     if (action === "obtenerPendientesEntrega" && pedido.status === "Pendiente Entrega") result.push(pedido);
-    if (action === "obtenerHistorial") result.push(pedido);
+    
+    // Almacena el pedido si se solicita el historial o el panel completo
+    if (action === "obtenerHistorial" || action === "obtenerTodo") result.push(pedido);
   }
   
+  // Lógica para las apps individuales: solo 10 entregados
   if (action === "obtenerHistorial") {
     result = result.filter(p => p.status === "Entregado").slice(-10).reverse();
   }
+  
+  // Lógica para el Panel de Control: muestra absolutamente todo, del más nuevo al más viejo
+  if (action === "obtenerTodo") {
+    result = result.reverse();
+  }
 
-  return response(result);
-}
-
-function response(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
 }
