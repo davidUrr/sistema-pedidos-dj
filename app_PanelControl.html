@@ -38,7 +38,7 @@ h1{margin:0;font-size:22px}
 </main>
 <script>
 // Reemplaza con la URL de tu implementación web de Google Apps Script
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNTzFZoJ5iS8oxHAfUUeZYVMIUZLaJgHs_GDZpXfSJIpXt7369PVwpT6TpvGkaqYBv/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIxoytaKLRbwxwGObpIAZ6cCxFQWIQO9_pjwhxLiEhaGV8xTkLAzciX5pnvb1POctZ/exec';
 const $=id=>document.getElementById(id);
 
 function drawCard(o) {
@@ -57,29 +57,31 @@ function drawCard(o) {
 function load(){
     ['col-devueltos','col-alistador','col-facturacion','col-entrega','col-entregados'].forEach(id=>$(id).innerHTML='Cargando...');
     
-    fetch(`${SCRIPT_URL}?action=obtenerTodo`, {
-        method: 'GET',
-        redirect: 'follow' // Obligatorio para seguir la redirección del servidor de Google
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'obtenerTodo' })
     })
-        .then(r => r.json())
-        .then(data => {
-            const cols = { dev:[], alist:[], fact:[], ent:[], fin:[] };
-            
-            data.forEach(o => {
-                if(o.status === 'Devuelto a Vendedor') cols.dev.push(o);
-                else if(o.status === 'Pendiente Alistador') cols.alist.push(o);
-                else if(o.status === 'Pendiente Facturación') cols.fact.push(o);
-                else if(o.status === 'Pendiente Entrega') cols.ent.push(o);
-                else if(o.status === 'Entregado') cols.fin.push(o);
-            });
+    .then(r => r.json())
+    .then(data => {
+        const cols = { dev:[], alist:[], fact:[], ent:[], fin:[] };
+        
+        data.forEach(o => {
+            if(o.status === 'Devuelto a Vendedor') cols.dev.push(o);
+            else if(o.status === 'Pendiente Alistador') cols.alist.push(o);
+            else if(o.status === 'Pendiente Facturación') cols.fact.push(o);
+            else if(o.status === 'Pendiente Entrega') cols.ent.push(o);
+            else if(o.status === 'Entregado') cols.fin.push(o);
+        });
 
-            $('col-devueltos').innerHTML = cols.dev.map(drawCard).join(''); $('c-dev').innerText = cols.dev.length;
-            $('col-alistador').innerHTML = cols.alist.map(drawCard).join(''); $('c-alist').innerText = cols.alist.length;
-            $('col-facturacion').innerHTML = cols.fact.map(drawCard).join(''); $('c-fact').innerText = cols.fact.length;
-            $('col-entrega').innerHTML = cols.ent.map(drawCard).join(''); $('c-ent').innerText = cols.ent.length;
-            $('col-entregados').innerHTML = cols.fin.map(drawCard).join(''); $('c-fin').innerText = cols.fin.length;
-        })
-        .catch(e => console.error("Error cargando panel:", e));
+        $('col-devueltos').innerHTML = cols.dev.map(drawCard).join(''); $('c-dev').innerText = cols.dev.length;
+        $('col-alistador').innerHTML = cols.alist.map(drawCard).join(''); $('c-alist').innerText = cols.alist.length;
+        $('col-facturacion').innerHTML = cols.fact.map(drawCard).join(''); $('c-fact').innerText = cols.fact.length;
+        $('col-entrega').innerHTML = cols.ent.map(drawCard).join(''); $('c-ent').innerText = cols.ent.length;
+        $('col-entregados').innerHTML = cols.fin.map(drawCard).join(''); $('c-fin').innerText = cols.fin.length;
+    })
+    .catch(e => console.error("Error cargando panel:", e));
 }
 
 // Cargar al iniciar

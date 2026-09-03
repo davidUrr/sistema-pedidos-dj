@@ -13,7 +13,7 @@
 </div></main>
 <script>
 const $=id=>document.getElementById(id);
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNTzFZoJ5iS8oxHAfUUeZYVMIUZLaJgHs_GDZpXfSJIpXt7369PVwpT6TpvGkaqYBv/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIxoytaKLRbwxwGObpIAZ6cCxFQWIQO9_pjwhxLiEhaGV8xTkLAzciX5pnvb1POctZ/exec';
 let orders=[]; let activeIdx=-1;
 function load(){
     fetch(`${SCRIPT_URL}?action=obtenerPendientesAlistador`).then(r=>r.json()).then(data=>{orders=data;renderList()});

@@ -12,7 +12,23 @@ function doPost(e) {
       ]);
       return response({ "status": "ok", "mensaje": "Pedido creado" });
     }
-    
+    // Acción para el Panel de Control vía POST (Evita CORS)
+    if (data.action === "obtenerTodo") {
+      var result = [];
+      for (var i = 1; i < rows.length; i++) {
+        var parsedProducts = [];
+        try { parsedProducts = JSON.parse(rows[i][9] || "[]"); } catch (err) { parsedProducts = []; }
+
+        result.push({
+          id: rows[i][0], date: rows[i][1], nit: rows[i][2], name: rows[i][3],
+          address: rows[i][4], city: rows[i][5], neighborhood: rows[i][6],
+          phone: rows[i][7], priceList: rows[i][8], products: parsedProducts,
+          notes: rows[i][10], status: rows[i][11], alistador: rows[i][12], route: rows[i][13],
+          facturaDate: rows[i][15], entregaDate: rows[i][16]
+        });
+      }
+      return response(result.reverse());
+    }
     for (var i = 1; i < rows.length; i++) {
       if (rows[i][0] === data.id) {
         var rowIndex = i + 1;
