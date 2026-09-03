@@ -1,0 +1,98 @@
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Pedidos");
+    var data = JSON.parse(e.postData.contents);
+    var rows = sheet.getDataRange().getValues();
+    
+    // 1. Guardar nuevo pedido (Vendedor)
+    if (data.action === "guardarPedido") {
+      sheet.appendRow([
+        data.id, new Date(), data.nit, data.name, data.address, data.city, 
+        data.neighborhood, data.phone, data.priceList, JSON.stringify(data.products), 
+        data.notes, "Pendiente Alistador", "", "", "", "", ""
+      ]);
+      return response({ "status": "ok", "mensaje": "Pedido creado" });
+    }
+    
+    // 2. Acciones de actualización de estado
+    for (var i = 1; i < rows.length; i++) {
+      if (rows[i][0] === data.id) {
+        var rowIndex = i + 1;
+        
+        if (data.action === "confirmarDespacho") {
+          sheet.getRange(rowIndex, 12).setValue("Pendiente Facturación");
+          
+          // Preservar datos de alistador y ruta
+          if (data.alistador) sheet.getRange(rowIndex, 13).setValue(data.alistador);
+          if (data.route) sheet.getRange(rowIndex, 14).setValue(data.route);
+          
+          // Actualizar datos del cliente si el vendedor edita la devolución
+          if (data.nit) sheet.getRange(rowIndex, 3).setValue(data.nit);
+          if (data.name) sheet.getRange(rowIndex, 4).setValue(data.name);
+          if (data.address) sheet.getRange(rowIndex, 5).setValue(data.address);
+          if (data.city) sheet.getRange(rowIndex, 6).setValue(data.city);
+          if (data.neighborhood) sheet.getRange(rowIndex, 7).setValue(data.neighborhood);
+          if (data.phone) sheet.getRange(rowIndex, 8).setValue(data.phone);
+          if (data.priceList) sheet.getRange(rowIndex, 9).setValue(data.priceList);
+          
+          // Actualizar notas y productos modificados
+          sheet.getRange(rowIndex, 11).setValue(data.despachoNotes || data.notes || rows[i][10]);
+          if (data.products) sheet.getRange(rowIndex, 10).setValue(JSON.stringify(data.products));
+        } 
+        else if (data.action === "devolverVendedor") {
+          sheet.getRange(rowIndex, 12).setValue("Devuelto a Vendedor");
+          sheet.getRange(rowIndex, 11).setValue(data.notes || rows[i][10]);
+          // Guardar ruta y productos validados parcialmente por el alistador
+          if (data.route) sheet.getRange(rowIndex, 14).setValue(data.route);
+          if (data.alistador) sheet.getRange(rowIndex, 13).setValue(data.alistador);
+          if (data.products) sheet.getRange(rowIndex, 10).setValue(JSON.stringify(data.products));
+        }
+        else if (data.action === "confirmarFactura") {
+          sheet.getRange(rowIndex, 12).setValue("Pendiente Entrega");
+          sheet.getRange(rowIndex, 16).setValue(new Date());
+        }
+        else if (data.action === "confirmarEntrega") {
+          sheet.getRange(rowIndex, 12).setValue("Entregado");
+          sheet.getRange(rowIndex, 17).setValue(new Date());
+        }
+        
+        return response({ "status": "ok", "mensaje": "Estado actualizado" });
+      }
+    }
+  } catch (error) {
+    return response({ "status": "error", "mensaje": error.toString() });
+  }
+}
+
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Pedidos");
+  var rows = sheet.getDataRange().getValues();
+  var action = e.parameter.action;
+  var result = [];
+  
+  for (var i = 1; i < rows.length; i++) {
+    var pedido = {
+      id: rows[i][0], date: rows[i][1], nit: rows[i][2], name: rows[i][3],
+      address: rows[i][4], city: rows[i][5], neighborhood: rows[i][6],
+      phone: rows[i][7], priceList: rows[i][8], products: JSON.parse(rows[i][9] || "[]"),
+      notes: rows[i][10], status: rows[i][11], alistador: rows[i][12], route: rows[i][13],
+      facturaDate: rows[i][15], entregaDate: rows[i][16]
+    };
+
+    if (action === "obtenerPendientesAlistador" && pedido.status === "Pendiente Alistador") result.push(pedido);
+    if (action === "obtenerDevueltosVendedor" && pedido.status === "Devuelto a Vendedor") result.push(pedido);
+    if (action === "obtenerPendientesFacturacion" && pedido.status === "Pendiente Facturación") result.push(pedido);
+    if (action === "obtenerPendientesEntrega" && pedido.status === "Pendiente Entrega") result.push(pedido);
+    if (action === "obtenerHistorial") result.push(pedido);
+  }
+  
+  if (action === "obtenerHistorial") {
+    result = result.filter(p => p.status === "Entregado").slice(-10).reverse();
+  }
+
+  return response(result);
+}
+
+function response(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}

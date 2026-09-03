@@ -13,7 +13,7 @@
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCo8zu5yi6SoGiOZV1-bC203KD3rVGxE2CFh64sl3dr3gfm0zXKDDsPoWGqXkBo8ZY/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRA-fAVpvVMQRlJyCB9g6Ziu9qMDPi42zOsymzZ9ua9hZdhY40mQggC7g5b3g8ktiI/exec';
 function load(){
     fetch(`${SCRIPT_URL}?action=obtenerPendientesFacturacion`).then(r=>r.json()).then(data=>{
         $('pendingList').innerHTML=data.length?data.map(o=>`<div class="order-item"><div><strong>${o.id}</strong> - ${o.name}<br><span class="status-badge status-facturacion">Validado por Bodega</span></div><button class="btn primary" onclick="confirmFact('${o.id}')">Confirmar Factura</button></div>`).join(''):'<p class="hint">No hay pedidos pendientes.</p>';
@@ -23,10 +23,15 @@ function load(){
     });
 }
 function confirmFact(id){
-    fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'confirmarFactura',id:id})}).then(()=>{
-        $('result').style.display='block'; $('result').innerText='Factura confirmada. Pedido enviado a Entrega.';
+    fetch(SCRIPT_URL,{
+        method:'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body:JSON.stringify({action:'confirmarFactura',id:id})
+    }).then(()=>{
+        $('result').style.display='block';$('result').innerText='Factura confirmada. Pedido enviado a Entrega.';
         setTimeout(()=>location.reload(),1500);
-    });
+    }).catch(e => console.error(e));
 }
 load();
 </script></body></html>
