@@ -13,13 +13,13 @@
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzU-S4moXhirw1AHlq3AJM0IebBIxHZ60r0PbRRGIbNwNaNl7YiKoYT4Zjyi3U4von6/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbXI9tWw4H-0VJBu-WjbFTW1Q0JidTJEs6UsIXHQEmNFPInJWf8NoEljUQ-P3Aa-OW/exec';
 function load(){
     fetch(`${SCRIPT_URL}?action=obtenerPendientesFacturacion`).then(r=>r.json()).then(data=>{
         $('pendingList').innerHTML=data.length?data.map(o=>`<div class="order-item"><div><strong>${o.id}</strong> - ${o.name}<br><span class="status-badge status-facturacion">Validado por Bodega</span></div><button class="btn primary" onclick="confirmFact('${o.id}')">Confirmar Factura</button></div>`).join(''):'<p class="hint">No hay pedidos pendientes.</p>';
     });
     fetch(`${SCRIPT_URL}?action=obtenerHistorial`).then(r=>r.json()).then(data=>{
-        $('historyList').innerHTML=data.map(o=>`<div class="order-item"><div><strong>${o.id}</strong> - ${o.name}</div><span class="status-badge status-entregado">Entregado</span></div>`).join('');
+        $('historyList').innerHTML=data.map(o=>`<div style="padding:8px;border-bottom:1px solid #eee;font-size:12px;display:flex;justify-content:space-between;align-items:center;"><span><strong>${o.id}</strong> - ${o.name}</span> <span class="status-badge" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">${o.status}</span></div>`).join('');
     });
 }
 function confirmFact(id){

@@ -4,7 +4,6 @@ function doPost(e) {
     var data = JSON.parse(e.postData.contents);
     var rows = sheet.getDataRange().getValues();
     
-    // 1. Guardar nuevo pedido (Vendedor)
     if (data.action === "guardarPedido") {
       sheet.appendRow([
         data.id, new Date(), data.nit, data.name, data.address, data.city, 
@@ -14,7 +13,6 @@ function doPost(e) {
       return response({ "status": "ok", "mensaje": "Pedido creado" });
     }
     
-    // 2. Acciones de actualización de estado
     for (var i = 1; i < rows.length; i++) {
       if (rows[i][0] === data.id) {
         var rowIndex = i + 1;
@@ -31,11 +29,11 @@ function doPost(e) {
         }
         else if (data.action === "confirmarFactura") {
           sheet.getRange(rowIndex, 12).setValue("Pendiente Entrega");
-          sheet.getRange(rowIndex, 16).setValue(new Date()); // Columna P: Factura_Confirmada
+          sheet.getRange(rowIndex, 16).setValue(new Date()); 
         }
         else if (data.action === "confirmarEntrega") {
           sheet.getRange(rowIndex, 12).setValue("Entregado");
-          sheet.getRange(rowIndex, 17).setValue(new Date()); // Columna Q: Entrega_Confirmada
+          sheet.getRange(rowIndex, 17).setValue(new Date()); 
         }
         
         return response({ "status": "ok", "mensaje": "Estado actualizado" });
@@ -65,20 +63,20 @@ function doGet(e) {
     if (action === "obtenerDevueltosVendedor" && pedido.status === "Devuelto a Vendedor") result.push(pedido);
     if (action === "obtenerPendientesFacturacion" && pedido.status === "Pendiente Facturación") result.push(pedido);
     if (action === "obtenerPendientesEntrega" && pedido.status === "Pendiente Entrega") result.push(pedido);
-    
-    // Almacena el pedido si se solicita el historial o el panel completo
     if (action === "obtenerHistorial" || action === "obtenerTodo") result.push(pedido);
   }
   
-  // Lógica para las apps individuales: solo 10 entregados
+  // Muestra los últimos 10 sin importar su estado
   if (action === "obtenerHistorial") {
-    result = result.filter(p => p.status === "Entregado").slice(-10).reverse();
+    result = result.slice(-10).reverse();
   }
-  
-  // Lógica para el Panel de Control: muestra absolutamente todo, del más nuevo al más viejo
   if (action === "obtenerTodo") {
     result = result.reverse();
   }
 
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+  return response(result);
+}
+
+function response(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
