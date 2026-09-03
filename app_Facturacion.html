@@ -13,7 +13,7 @@
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIxoytaKLRbwxwGObpIAZ6cCxFQWIQO9_pjwhxLiEhaGV8xTkLAzciX5pnvb1POctZ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeYb_DF3gDvoLHWg3PiS35CWNfbkNm48OI_3xEgWjaapU3xrOHPLPCtTrpHA7X1aY5/exec';
 function load(){
     fetch(`${SCRIPT_URL}?action=obtenerPendientesFacturacion`).then(r=>r.json()).then(data=>{
         $('pendingList').innerHTML=data.length?data.map(o=>`<div class="order-item"><div><strong>${o.id}</strong> - ${o.name}<br><span class="status-badge status-facturacion">Validado por Bodega</span></div><button class="btn primary" onclick="confirmFact('${o.id}')">Confirmar Factura</button></div>`).join(''):'<p class="hint">No hay pedidos pendientes.</p>';

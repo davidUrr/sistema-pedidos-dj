@@ -4,15 +4,6 @@ function doPost(e) {
     var data = JSON.parse(e.postData.contents);
     var rows = sheet.getDataRange().getValues();
     
-    if (data.action === "guardarPedido") {
-      sheet.appendRow([
-        data.id, new Date(), data.nit, data.name, data.address, data.city, 
-        data.neighborhood, data.phone, data.priceList, JSON.stringify(data.products), 
-        data.notes, "Pendiente Alistador", "", "", "", "", ""
-      ]);
-      return response({ "status": "ok", "mensaje": "Pedido creado" });
-    }
-    // Acción para el Panel de Control vía POST (Evita CORS)
     if (data.action === "obtenerTodo") {
       var result = [];
       for (var i = 1; i < rows.length; i++) {
@@ -29,10 +20,19 @@ function doPost(e) {
       }
       return response(result.reverse());
     }
+
+    if (data.action === "guardarPedido") {
+      sheet.appendRow([
+        data.id, new Date(), data.nit, data.name, data.address, data.city, 
+        data.neighborhood, data.phone, data.priceList, JSON.stringify(data.products), 
+        data.notes, "Pendiente Alistador", "", "", "", "", ""
+      ]);
+      return response({ "status": "ok", "mensaje": "Pedido creado" });
+    }
+    
     for (var i = 1; i < rows.length; i++) {
       if (rows[i][0] === data.id) {
         var rowIndex = i + 1;
-        
         if (data.action === "confirmarDespacho") {
           sheet.getRange(rowIndex, 12).setValue("Pendiente Facturación");
           sheet.getRange(rowIndex, 13).setValue(data.alistador || "");
@@ -51,13 +51,16 @@ function doPost(e) {
           sheet.getRange(rowIndex, 12).setValue("Entregado");
           sheet.getRange(rowIndex, 17).setValue(new Date()); 
         }
-        
         return response({ "status": "ok", "mensaje": "Estado actualizado" });
       }
     }
   } catch (error) {
-    return response({ "status": "error", "mensaje": error.toString() });
+    return response({ "error": error.toString() });
   }
+}
+
+function response(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet(e) {
