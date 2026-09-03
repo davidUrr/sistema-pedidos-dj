@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DJ · Panel de Control</title>
+<style>
+:root{--green:#157347;--green-dark:#0b432b;--lime:#dff2e6;--ink:#1f2937;--bg:#f1f5f3;--card:#fff;--line:#d0d5dd;--shadow:0 4px 6px -1px rgb(0 0 0 / 0.1)}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:14px Inter,sans-serif}
+.shell{max-width:1400px;margin:auto;padding:20px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(145deg,#2cac64,#0b432b);display:grid;place-items:center;color:white;font-weight:900;font-size:18px}
+.brand{display:flex;gap:12px;align-items:center} .eyebrow{color:var(--green);font-size:10px;font-weight:900;text-transform:uppercase}
+h1{margin:0;font-size:22px}
+.board{display:flex;gap:15px;overflow-x:auto;padding-bottom:10px;min-height:80vh}
+.col{flex:1;min-width:260px;background:#e3e8e5;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.col-title{font-weight:900;font-size:13px;color:#475467;text-transform:uppercase;margin-bottom:5px;display:flex;justify-content:space-between}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;box-shadow:var(--shadow);font-size:12px}
+.card strong{display:block;font-size:13px;margin-bottom:4px;color:var(--green-dark)}
+.card-meta{color:#667085;margin-top:8px;font-size:11px;display:flex;flex-direction:column;gap:3px}
+.badge{display:inline-block;padding:3px 6px;border-radius:4px;background:#f1f5f3;border:1px solid var(--line);font-weight:bold;margin-top:5px}
+.btn-refresh{padding:8px 14px;background:white;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-weight:bold;box-shadow:var(--shadow)}
+.btn-refresh:active{transform:scale(0.97)}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top">
+    <div class="brand"><div class="logo">DJ</div><div><div class="eyebrow">Distribuciones Johnson</div><h1>Panel de Control Maestro</h1></div></div>
+    <button class="btn-refresh" onclick="load()">🔄 Actualizar Tablero</button>
+</header>
+<div class="board">
+    <div class="col"><div class="col-title">Devueltos <span id="c-dev">0</span></div><div id="col-devueltos"></div></div>
+    <div class="col"><div class="col-title">En Alistamiento <span id="c-alist">0</span></div><div id="col-alistador"></div></div>
+    <div class="col"><div class="col-title">En Facturación <span id="c-fact">0</span></div><div id="col-facturacion"></div></div>
+    <div class="col"><div class="col-title">En Entrega <span id="c-ent">0</span></div><div id="col-entrega"></div></div>
+    <div class="col"><div class="col-title">Finalizados <span id="c-fin">0</span></div><div id="col-entregados"></div></div>
+</div>
+</main>
+<script>
+// Reemplaza con la URL de tu implementación web de Google Apps Script
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCo8zu5yi6SoGiOZV1-bC203KD3rVGxE2CFh64sl3dr3gfm0zXKDDsPoWGqXkBo8ZY/exec';
+const $=id=>document.getElementById(id);
+
+function drawCard(o) {
+    return `<div class="card">
+        <strong>${o.id}</strong>
+        ${o.name}<br>
+        <div class="card-meta">
+            <span>📍 ${o.city || 'N/A'} - ${o.neighborhood || 'N/A'}</span>
+            ${o.alistador ? `<span>📦 Alistador: ${o.alistador}</span>` : ''}
+            ${o.route ? `<span>🚚 Ruta: ${o.route}</span>` : ''}
+        </div>
+        ${o.notes ? `<div class="badge">📝 ${o.notes}</div>` : ''}
+    </div>`;
+}
+
+function load(){
+    ['col-devueltos','col-alistador','col-facturacion','col-entrega','col-entregados'].forEach(id=>$(id).innerHTML='Cargando...');
+    
+    fetch(`${SCRIPT_URL}?action=obtenerTodo`)
+        .then(r => r.json())
+        .then(data => {
+            const cols = { dev:[], alist:[], fact:[], ent:[], fin:[] };
+            
+            data.forEach(o => {
+                if(o.status === 'Devuelto a Vendedor') cols.dev.push(o);
+                else if(o.status === 'Pendiente Alistador') cols.alist.push(o);
+                else if(o.status === 'Pendiente Facturación') cols.fact.push(o);
+                else if(o.status === 'Pendiente Entrega') cols.ent.push(o);
+                else if(o.status === 'Entregado') cols.fin.push(o);
+            });
+
+            $('col-devueltos').innerHTML = cols.dev.map(drawCard).join(''); $('c-dev').innerText = cols.dev.length;
+            $('col-alistador').innerHTML = cols.alist.map(drawCard).join(''); $('c-alist').innerText = cols.alist.length;
+            $('col-facturacion').innerHTML = cols.fact.map(drawCard).join(''); $('c-fact').innerText = cols.fact.length;
+            $('col-entrega').innerHTML = cols.ent.map(drawCard).join(''); $('c-ent').innerText = cols.ent.length;
+            $('col-entregados').innerHTML = cols.fin.map(drawCard).join(''); $('c-fin').innerText = cols.fin.length;
+        })
+        .catch(e => console.error("Error cargando panel:", e));
+}
+
+// Cargar al iniciar
+load();
+</script>
+</body>
+</html>
