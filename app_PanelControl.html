@@ -57,7 +57,10 @@ function drawCard(o) {
 function load(){
     ['col-devueltos','col-alistador','col-facturacion','col-entrega','col-entregados'].forEach(id=>$(id).innerHTML='Cargando...');
     
-    fetch(`${SCRIPT_URL}?action=obtenerTodo`)
+    fetch(`${SCRIPT_URL}?action=obtenerTodo`, {
+        method: 'GET',
+        redirect: 'follow' // Obligatorio para seguir la redirección del servidor de Google
+    })
         .then(r => r.json())
         .then(data => {
             const cols = { dev:[], alist:[], fact:[], ent:[], fin:[] };
